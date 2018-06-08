@@ -1,0 +1,33 @@
+{
+  "name": "anifetch",
+  "version": "1.0.0",
+  "description": "A node package for searching anime and manga info",
+  "main": "index.js",
+  "scripts": {
+    "lint": "standard test.js index.js",
+    "lintfix": "standard --fix test.js index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/intrnl/anifetch.git"
+  },
+  "keywords": [
+    "kitsu",
+    "anilist",
+    "anime",
+    "manga"
+  ],
+  "author": "intrnl",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/intrnl/anifetch/issues"
+  },
+  "homepage": "https://github.com/intrnl/anifetch#readme",
+  "dependencies": {
+    "request": "^2.87.0",
+    "request-promise-native": "^1.0.5"
+  },
+  "devDependencies": {
+    "standard": "^11.0.1"
+  }
+}

@@ -188,9 +188,9 @@ function searchAniList (type, searchterm) {
   return new Promise((resolve, reject) => {
     var endpoint = 'https://graphql.anilist.co'
     var query = `
-    {
+    query ($query: String, $type: MediaType) {
       Page {
-        media(search: "${searchterm}", type: ANIME) {
+        media(search: $query, type: $type) {
           id
           title {
             romaji
@@ -214,6 +214,8 @@ function searchAniList (type, searchterm) {
           format
           status
           episodes
+          volumes
+          chapters
           description
           averageScore
           synonyms
@@ -224,6 +226,10 @@ function searchAniList (type, searchterm) {
       }
     }
     `
+    var queryvariables = {
+      'type': type.toUpperCase(),
+      'query': searchterm
+    }
 
     request.post({
       url: endpoint,
@@ -233,7 +239,8 @@ function searchAniList (type, searchterm) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        'query': query
+        'query': query,
+        'variables': queryvariables
       })
     })
       .then(searchdata => {
@@ -521,9 +528,9 @@ function commonfyAniList (data) {
     if (data.averageScore) returndata.rating = parseInt(data.averageScore)
     // AniList doesn't provide age ratings
 
-    if (data.startDate.day) returndata.dateStart = new Date(data.startDate.year, data.startDate.month, data.startDate.day).toISOString()
-    if (data.endDate.day) returndata.dateEnd = new Date(data.endDate.year, data.endDate.month, data.endDate.day).toISOString()
-    if (data.nextAiringEpisode) returndata.dateNextRelease = new Date(data.nextAiringEpisode.airingAt * 1000).toISOString()
+    if (data.startDate.day) returndata.date.start = new Date(data.startDate.year, data.startDate.month, data.startDate.day).toISOString()
+    if (data.endDate.day) returndata.date.end = new Date(data.endDate.year, data.endDate.month, data.endDate.day).toISOString()
+    if (data.nextAiringEpisode) returndata.date.nextrelease = new Date(data.nextAiringEpisode.airingAt * 1000).toISOString()
 
     resolve(returndata)
   })

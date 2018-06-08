@@ -1,10 +1,16 @@
 # anifetch
 A node package for searching anime and manga info
 
+## Installation
+
+```
+$ npm i --save anifetch
+```
+
 ## Usage
 
 ```js
-const anifetch = require('./index.js')
+const anifetch = require('anifetch')
 
 const init = async () => {
   let kitsu = await anifetch.search('kitsu', 'anime', 'darling in the franxx')

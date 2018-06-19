@@ -372,6 +372,14 @@ function commonfyKitsu (data) {
         break
     }
     switch (data.status) {
+      case 'current':
+        if (returndata.format === 'Anime') returndata.status = 'Currently Airing'
+        if (returndata.format === 'Manga') returndata.status = 'Currently Publishing'
+        break
+      case 'finished':
+        if (returndata.format === 'Anime') returndata.status = 'Finished Airing'
+        if (returndata.format === 'Manga') returndata.status = 'Finished Publishing'
+        break
       case 'tba':
         returndata.status = 'TBA'
         break
@@ -381,26 +389,6 @@ function commonfyKitsu (data) {
       case 'upcoming':
         returndata.status = 'Upcoming'
         break
-    }
-    if (returndata.format === 'Anime') {
-      switch (data.status) {
-        case 'current':
-          returndata.status = 'Currently Airing'
-          break
-        case 'finished':
-          returndata.status = 'Finished Airing'
-          break
-      }
-    }
-    if (returndata.format === 'Manga') {
-      switch (data.status) {
-        case 'current':
-          returndata.status = 'Currently Publishing'
-          break
-        case 'finished':
-          returndata.status = 'Finished Publishing'
-          break
-      }
     }
     if (data.episodeCount) returndata.episodes = parseInt(data.episodeCount)
     if (data.volumeCount) returndata.volumes = parseInt(data.volumeCount)
@@ -495,32 +483,20 @@ function commonfyAniList (data) {
         break
     }
     switch (data.status) {
+      case 'FINISHED':
+        if (returndata.format === 'Anime') returndata.status = 'Finished Airing'
+        if (returndata.format === 'Manga') returndata.status = 'Finished Publishing'
+        break
+      case 'RELEASING':
+        if (returndata.format === 'Anime') returndata.status = 'Currently Airing'
+        if (returndata.format === 'Manga') returndata.status = 'Currently Publishing'
+        break
       case 'NOT_YET_RELEASED': // Documentation says this is for anime that is "To be released at a later date", seems kinda vague.
         returndata.status = 'Upcoming' // Not sure if this goes to TBA, Upcoming, or Unreleased.
         break
       case 'CANCELLED':
         returndata.status = 'Cancelled'
         break
-    }
-    if (data.format === 'Anime') {
-      switch (data.status) {
-        case 'FINISHED':
-          returndata.status = 'Finished Airing'
-          break
-        case 'RELEASING':
-          returndata.status = 'Currently Airing'
-          break
-      }
-    }
-    if (data.format === 'Manga') {
-      switch (data.status) {
-        case 'FINISHED':
-          returndata.status = 'Finished Publishing'
-          break
-        case 'RELEASING':
-          returndata.status = 'Currently Publishing'
-          break
-      }
     }
     if (data.episodes) returndata.episodes = parseInt(data.episodes)
     if (data.volumes) returndata.volumes = parseInt(data.volumes)

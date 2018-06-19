@@ -164,6 +164,7 @@ function searchKitsu (type, searchterm) {
     })
       .then(searchdata => {
         var data = searchdata.data[0].attributes
+        data.id = searchdata.data[0].id
 
         if (!data) return reject(new AnifetchError("doesn't seem to return anything"))
 

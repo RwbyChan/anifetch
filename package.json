@@ -1,6 +1,6 @@
 {
   "name": "anifetch",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A node package for searching anime and manga info",
   "main": "index.js",
   "scripts": {

@@ -582,7 +582,7 @@ function DiscordEmbed (data) {
       if (data.date.start && data.status === 'Unreleased') embed.footer.text = `Publishing in ${dateConvert(data.date.start)}`
     }
 
-    if (data.dateNextRelease) embed.timestamp = data.dateNextRelease
+    if (data.date.nextrelease) embed.timestamp = data.date.nextrelease
 
     return resolve(embed)
   })

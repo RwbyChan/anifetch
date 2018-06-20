@@ -1,7 +1,7 @@
 const Anifetch = require('./index.js')
 
 const init = async () => {
-  var anime = await Anifetch('anilist', 'anime', 'shingetsutan tsukihime')
+  var anime = await Anifetch('kitsu', 'anime', 'darling in the franxx')
     .catch(error => console.log(error))
 
   var processed = await Anifetch.commonfy(anime)

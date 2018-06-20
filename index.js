@@ -1,4 +1,5 @@
 const request = require('request-promise-native')
+const he = require('he')
 
 /**
  * Information given by the provider's API
@@ -436,7 +437,12 @@ function commonfyAniList (data) {
 
     returndata.url = `${returndata.provider.url}/anime/${data.id}`
     returndata.cover = data.coverImage.large || data.coverImage.medium || null
-    returndata.synopsis = data.description.replace(/(\n|<i>|<\/i>|<b>|<\/b>)/g, '').replace(/<br>/g, '\n')
+
+    data.description = data.description
+      .replace(/(\n|<i>|<\/i>|<b>|<\/b>)/g, '')
+      .replace(/<br>/g, '\n')
+    data.description = he.decode(data.description)
+    returndata.synopsis = data.description
 
     switch (data.format) {
       case 'TV':

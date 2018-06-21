@@ -172,7 +172,7 @@ function searchKitsu (type, searchterm) {
         data.provider = 'kitsu'
         resolve(data)
       })
-      .catch(err => reject(new AnifetchError(err.error.message || err.error)))
+      .catch(err => reject(new AnifetchError(err)))
   })
 }
 
@@ -254,7 +254,7 @@ function searchAniList (type, searchterm) {
         data.provider = 'anilist'
         resolve(data)
       })
-      .catch(err => reject(new AnifetchError(err.error.message || err.error)))
+      .catch(err => reject(new AnifetchError(err)))
   })
 }
 

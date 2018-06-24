@@ -573,13 +573,13 @@ function DiscordEmbed (data) {
       if (data.date.start) embed.footer.text = `Aired from ${dateConvert(data.date.start)} to ${dateConvert(data.date.end) || '-'}`
       if (data.date.start === data.date.end) embed.footer.text = `Aired in ${dateConvert(data.date.start)}`
       if (data.date.start && data.status === 'Currently Airing') embed.footer.text = `Airing from ${dateConvert(data.date.start)}`
-      if (data.date.start && data.status === 'Unreleased') embed.footer.text = `Airing in ${dateConvert(data.date.start)}`
+      if (data.date.start && (data.status === 'Unreleased' || data.status === 'Upcoming')) embed.footer.text = `Airing in ${dateConvert(data.date.start)}`
     }
     if (data.format === 'Manga') {
       if (data.date.start) embed.footer.text = `Published from ${dateConvert(data.date.start)} to ${dateConvert(data.date.end) || '-'}`
       if (data.date.start === data.date.end) embed.footer.text = `Published in ${dateConvert(data.date.start)}`
       if (data.date.start && data.status === 'Currently Publishing') embed.footer.text = `Publishing from ${dateConvert(data.date.start)}`
-      if (data.date.start && data.status === 'Unreleased') embed.footer.text = `Publishing in ${dateConvert(data.date.start)}`
+      if (data.date.start && (data.status === 'Unreleased' || data.status === 'Upcoming')) embed.footer.text = `Publishing in ${dateConvert(data.date.start)}`
     }
 
     if (data.date.nextrelease) embed.timestamp = data.date.nextrelease

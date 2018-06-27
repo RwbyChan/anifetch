@@ -350,7 +350,7 @@ function MapAniList (data) {
 
   returndata.id = data.id
 
-  returndata.url = `${returndata.provider.url}/anime/${data.id}`
+  returndata.url = `${returndata.provider_url}/anime/${data.id}`
   returndata.cover = data.coverImage.large || data.coverImage.medium || null
 
   returndata.synopsis = he.decode(data.description)

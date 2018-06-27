@@ -64,7 +64,7 @@ function SearchKitsu (type, searchterm) {
     request.get({
       url: endpointConstructedURL,
       headers: {
-        'User-Agent': 'Haru, a general purpose Discord bot.',
+        'User-Agent': 'Anifetch, a node package for searching anime and manga.',
         'Accept': 'application/vnd.api+json',
         'Content-Type': 'application/vnd.api+json'
       },
@@ -140,7 +140,7 @@ function SearchAniList (type, searchterm) {
     request.post({
       url: endpointURL,
       headers: {
-        'User-Agent': 'Haru, a general purpose Discord bot.',
+        'User-Agent': 'Anifetch, a node package for searching anime and manga.',
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },

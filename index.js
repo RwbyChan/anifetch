@@ -342,11 +342,11 @@ function MapAniList (data) {
   returndata.provider_url = 'https://anilist.co'
   returndata.provider_avatar = 'https://avatars3.githubusercontent.com/u/18018524'
 
-  returndata.title_canonical = data.title_romaji || data.title_english || data.title_native // AniList doesn't provide a canonical title, opting for user preferred instead.
-  if (data.title_native) returndata.title_native = data.title_native
-  if (data.title_romaji) returndata.title_romaji = data.title_romaji
-  if (data.title_english) returndata.title_english = data.title_english
-  if (data.synonyms && data.synonyms !== '') returndata.title_synonyms = data.title_synonyms
+  returndata.title_canonical = data.title.romaji || data.title.english || data.title.native // AniList doesn't provide a canonical title, opting for user preferred instead.
+  if (data.title.native) returndata.title_native = data.title.native
+  if (data.title.romaji) returndata.title_romaji = data.title.romaji
+  if (data.title.english) returndata.title_english = data.title.english
+  if (data.synonyms && data.synonyms !== '') returndata.title_synonyms = data.title.synonyms
 
   returndata.id = data.id
 
@@ -356,6 +356,7 @@ function MapAniList (data) {
   returndata.synopsis = he.decode(data.description)
     .replace(/(\n|<i>|<\/i>|<b>|<\/b>)/g, '')
     .replace(/<br>/g, '\n')
+    .replace(/(\r\n|\r|\n)/g, '\n')
 
   switch (data.type) {
     case 'ANIME':

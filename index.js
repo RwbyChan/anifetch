@@ -117,6 +117,7 @@ function SearchAniList (type, searchterm) {
             large
             medium
           }
+          type
           format
           status
           episodes

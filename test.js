@@ -6,8 +6,8 @@ const init = async () => {
 
   let embed = anime.map(Anifetch.DiscordEmbed)
 
-  console.log(anime)
-  console.log(embed)
+  console.log(anime[0])
+  console.log(embed[0])
   console.log('done')
 }
 

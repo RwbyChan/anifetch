@@ -296,7 +296,7 @@ function MapKitsu (data) {
       break
   }
 
-  switch (data.status) {
+  switch (data.attributes.status) {
     case 'current':
       returndata.status = 'Ongoing'
       if (data.type === 'anime') returndata.status = 'Currently Airing'
@@ -428,8 +428,8 @@ function MapAniList (data) {
   if (data.chapters) returndata.chapters = parseInt(data.chapters)
   if (data.averageScore) returndata.rating = parseInt(data.averageScore)
 
-  if (data.startDate.day) returndata.date_start = new Date(data.startDate.year, data.startDate.month, data.startDate.day).toISOString()
-  if (data.endDate.day) returndata.date_end = new Date(data.endDate.year, data.endDate.month, data.endDate.day).toISOString()
+  if (data.startDate.day) returndata.date_start = new Date(data.startDate.year, data.startDate.month - 1, data.startDate.day).toISOString()
+  if (data.endDate.day) returndata.date_end = new Date(data.endDate.year, data.endDate.month - 1, data.endDate.day).toISOString()
   if (data.nextAiringEpisode) returndata.date_nextrelease = new Date(data.nextAiringEpisode.airingAt * 1000).toISOString()
 
   return returndata

@@ -1,5 +1,4 @@
 const Anifetch = require('./index.js')
-const request = require('request-promise-native')
 
 const init = async () => {
   var anime = await Anifetch('kitsu', 'anime', 'Darling in the FranXX')

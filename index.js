@@ -17,7 +17,7 @@ module.exports.MALFull = MapMALFull
 /**
  * Searches for anime/manga information through a provider with a given search term
  * and returns an array of commonfied search result
- * 
+ *
  * @param {String} provider    The provider to use
  * @param {String} type        The type of series to search
  * @param {String} searchterm  What to search
@@ -46,7 +46,7 @@ function SearchAnime (provider, type, searchterm) {
 
 /**
  * Searches Kitsu for series information
- * 
+ *
  * @param {String} type        The type of series to search
  * @param {String} searchterm  What to search
  */
@@ -79,7 +79,7 @@ function SearchKitsu (type, searchterm) {
 
 /**
  * Searches MyAnimeList for series information using Jikan, an unofficial MAL REST API
- * 
+ *
  * @param {String} type        The type of series to search
  * @param {String} searchterm  What to search
  */
@@ -112,7 +112,7 @@ function SearchMyAnimeList (type, searchterm) {
 
 /**
  * Searches AniList for series information
- * 
+ *
  * @param {String} type        The type of series to search
  * @param {String} searchterm  What to search
  */
@@ -193,7 +193,7 @@ function SearchAniList (type, searchterm) {
 
 /**
  * Turns a commonfied search data object to something that can be used by Discord's embeds
- * 
+ *
  * @param {Object} data The commonfied search data object
  */
 function MapDiscordEmbed (data) {
@@ -249,7 +249,7 @@ function MapDiscordEmbed (data) {
 
 /**
  * Turns a raw search data object from Kitsu to a commonfied search data object
- * 
+ *
  * @param {Object} data The raw search data object
  */
 function MapKitsu (data) {
@@ -363,7 +363,7 @@ function MapKitsu (data) {
 
 /**
  * Turns a raw search data object from MyAnimeList to a commonfied search data object
- * 
+ *
  * @param {Object} data The raw search data object
  */
 function MapMALMini (data) {
@@ -550,11 +550,17 @@ function MapMALFull (data) {
   if (data.score && typeof data.score === 'number') returndata.rating = Math.floor(parseFloat(data.score) * 10)
   if (data.rating) returndata.ageRating = data.rating
 
-  if (data.aired && data.aired.from && typeof data.aired.from === 'string') { returndata.date_start = new Date(`${data.aired.from}T12:00:00Z`).toISOString() }
-  else if (data.published && data.published.from && typeof data.published.from === 'string') { returndata.date_start = new Date(`${data.published.from}T12:00:00Z`).toISOString() }
+  if (data.aired && data.aired.from && typeof data.aired.from === 'string') {
+    returndata.date_start = new Date(`${data.aired.from}T12:00:00Z`).toISOString()
+  } else if (data.published && data.published.from && typeof data.published.from === 'string') {
+    returndata.date_start = new Date(`${data.published.from}T12:00:00Z`).toISOString()
+  }
 
-  if (data.aired && data.aired.to && typeof data.aired.to === 'string') { returndata.date_end = new Date(`${data.aired.to}T12:00:00Z`).toISOString() }
-  else if (data.published && data.published.to && typeof data.published.to === 'string') { returndata.date_end = new Date(`${data.published.to}T12:00:00Z`).toISOString() }
+  if (data.aired && data.aired.to && typeof data.aired.to === 'string') {
+    returndata.date_end = new Date(`${data.aired.to}T12:00:00Z`).toISOString()
+  } else if (data.published && data.published.to && typeof data.published.to === 'string') {
+    returndata.date_end = new Date(`${data.published.to}T12:00:00Z`).toISOString()
+  }
 
   // MyAnimeList doesn't provide the next release date but we can atleast calculate.
   if (data.broadcast && returndata.status.startsWith('Currently')) {
@@ -584,7 +590,7 @@ function MapMALFull (data) {
 
 /**
  * Turns a raw search data object from AniList to a commonfied search data object
- * 
+ *
  * @param {Object} data The raw search data object
  */
 function MapAniList (data) {
@@ -688,7 +694,7 @@ function MapAniList (data) {
 
 /**
  * Returns a truncated string of specific length
- * 
+ *
  * @param {String} text  Text to truncate
  * @param {Number} n     Length of text before it gets truncated
  */
@@ -698,7 +704,7 @@ function truncateText (text, n) {
 
 /**
  * Converts date into "mmmm d, yyyy"
- * 
+ *
  * @param {(String|Object)} date Date object
  */
 function dateConvert (date) {

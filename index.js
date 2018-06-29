@@ -1,10 +1,18 @@
 const request = require('request-promise-native')
 const he = require('he')
 
+// Main search function
 module.exports = SearchAnime
 module.exports.search = SearchAnime
-module.exports.embed = DiscordEmbed
+
+// Discord embed map
 module.exports.DiscordEmbed = MapDiscordEmbed
+
+// Provider search results map
+module.exports.Kitsu = MapKitsu
+module.exports.AniList = MapAniList
+module.exports.MAL = MapMALMini
+module.exports.MALFull = MapMALFull
 
 /**
  * Searches for anime/manga information through a provider with a given search term
@@ -25,25 +33,14 @@ function SearchAnime (provider, type, searchterm) {
       case 'anilist':
         resolve(SearchAniList(type, searchterm))
         break
+      case 'mal':
+      case 'myanimelist':
+        resolve(SearchMyAnimeList(type, searchterm))
+        break
       default:
         reject(new Error('provider not supported.'))
         break
     }
-  })
-}
-
-/**
- * Takes the commonfied search data and returns an array of Discord's embeds,
- * basically just a function to use if you don't want to use `Array.prototype.map()`
- * with `Anifetch.DiscordEmbed`
- * 
- * @param {Object[]} data Array of commonfied search results
- */
-function DiscordEmbed (data) {
-  return new Promise((resolve, reject) => {
-    let returndata = data.map(MapDiscordEmbed)
-
-    resolve(returndata)
   })
 }
 
@@ -56,7 +53,7 @@ function DiscordEmbed (data) {
 function SearchKitsu (type, searchterm) {
   return new Promise((resolve, reject) => {
     let supportedType = ['anime', 'manga']
-    if (supportedType.indexOf(type) < 0) throw new Error(`Invalid type, must be ${supportedType.map(type => `'${type}'`).join(', ')}`)
+    if (supportedType.indexOf(type) < 0) reject(new Error(`Invalid type, must be ${supportedType.map(type => `'${type}'`).join(', ')}`))
 
     let endpointURL = 'https://kitsu.io/api/edge'
     let endpointConstructedURL = `${endpointURL}/${type}?page[limit]=20&filter[text]=${searchterm}`
@@ -81,6 +78,39 @@ function SearchKitsu (type, searchterm) {
 }
 
 /**
+ * Searches MyAnimeList for series information using Jikan, an unofficial MAL REST API
+ * 
+ * @param {String} type        The type of series to search
+ * @param {String} searchterm  What to search
+ */
+function SearchMyAnimeList (type, searchterm) {
+  return new Promise((resolve, reject) => {
+    let supportedType = ['anime', 'manga']
+    if (supportedType.indexOf(type) < 0) reject(new Error(`Invalid type, must be ${supportedType.map(type => `'${type}'`).join(', ')}`))
+
+    if (searchterm.length < 3) reject(new Error('MyAnimeList only processes queries with a minimum of 3 letters.'))
+
+    let endpointURL = 'https://api.jikan.moe'
+    let endpointConstructedURL = `${endpointURL}/search/${type}/${searchterm}`
+
+    request.get({
+      url: endpointConstructedURL,
+      headers: {
+        'User-Agent': 'Anifetch, a node package for searching anime and manga.'
+      },
+      json: true
+    })
+      .catch(err => reject(new Error(err)))
+      .then(searchdata => {
+        let data = searchdata.result
+          .map(MapMALMini)
+
+        resolve(data)
+      })
+  })
+}
+
+/**
  * Searches AniList for series information
  * 
  * @param {String} type        The type of series to search
@@ -89,7 +119,7 @@ function SearchKitsu (type, searchterm) {
 function SearchAniList (type, searchterm) {
   return new Promise((resolve, reject) => {
     let supportedType = ['anime', 'manga']
-    if (supportedType.indexOf(type) < 0) throw new Error(`Invalid type, must be ${supportedType.map(type => `'${type}'`).join(', ')}`)
+    if (supportedType.indexOf(type) < 0) reject(new Error(`Invalid type, must be ${supportedType.map(type => `'${type}'`).join(', ')}`))
 
     let endpointURL = 'https://graphql.anilist.co'
 
@@ -201,13 +231,13 @@ function MapDiscordEmbed (data) {
 
   if (data.format === 'Anime') {
     if (data.date_start) embed.footer.text = `Aired from ${dateConvert(data.date_start)} to ${dateConvert(data.date_end) || '-'}`
-    if (data.date_start === data.date_end) embed.footer.text = `Aired in ${dateConvert(data.date_start)}`
+    if (data.date_end && data.date_start === data.date_end) embed.footer.text = `Aired in ${dateConvert(data.date_start)}`
     if (data.date_start && data.status === 'Currently Airing') embed.footer.text = `Airing from ${dateConvert(data.date_start)}`
     if (data.date_start && (data.status === 'Unreleased' || data.status === 'Upcoming')) embed.footer.text = `Airing in ${dateConvert(data.date_start)}`
   }
   if (data.format === 'Manga') {
     if (data.date_start) embed.footer.text = `Published from ${dateConvert(data.date_start)} to ${dateConvert(data.date_end) || '-'}`
-    if (data.date_start === data.date_end) embed.footer.text = `Published in ${dateConvert(data.date_start)}`
+    if (data.date_end && data.date_start === data.date_end) embed.footer.text = `Published in ${dateConvert(data.date_start)}`
     if (data.date_start && data.status === 'Currently Publishing') embed.footer.text = `Publishing from ${dateConvert(data.date_start)}`
     if (data.date_start && (data.status === 'Unreleased' || data.status === 'Upcoming')) embed.footer.text = `Publishing in ${dateConvert(data.date_start)}`
   }
@@ -327,6 +357,227 @@ function MapKitsu (data) {
   if (data.attributes.startDate) returndata.date_start = new Date(`${data.attributes.startDate}T12:00:00Z`).toISOString()
   if (data.attributes.endDate) returndata.date_end = new Date(`${data.attributes.endDate}T12:00:00Z`).toISOString()
   if (data.attributes.nextRelease) returndata.date_nextrelease = new Date(data.attributes.nextRelease).toISOString()
+
+  return returndata
+}
+
+/**
+ * Turns a raw search data object from MyAnimeList to a commonfied search data object
+ * 
+ * @param {Object} data The raw search data object
+ */
+function MapMALMini (data) {
+  let returndata = {}
+
+  returndata.provider_name = 'MyAnimeList'
+  returndata.provider_url = 'https://myanimelist.com'
+  returndata.provider_avatar = 'https://myanimelist.net/img/common/pwa/launcher-icon-4x.png'
+
+  // Since the search data object is from the rather limited search results,
+  // there wouldn't be anything interesting to see from this.
+  // However, if you decide to fetch the full anime information from its ID, a full map is provided just for that.
+
+  returndata.title_canonical = data.title
+
+  returndata.id = data.mal_id.toString()
+
+  returndata.url = data.url
+  if (data.image_url) returndata.cover = data.image_url
+
+  returndata.synopsis = he.decode(data.description)
+
+  switch (data.type) {
+    // Anime
+    case 'TV':
+      returndata.format = 'Anime'
+      returndata.type = 'TV'
+      break
+    case 'OVA':
+      returndata.format = 'Anime'
+      returndata.type = 'OVA'
+      break
+    case 'ONA':
+      returndata.format = 'Anime'
+      returndata.type = 'ONA'
+      break
+    case 'Movie':
+      returndata.format = 'Anime'
+      returndata.type = 'Movie'
+      break
+    case 'Special':
+      returndata.format = 'Anime'
+      returndata.type = 'Special'
+      break
+    case 'Music':
+      returndata.format = 'Anime'
+      returndata.type = 'Music Video'
+      break
+
+    // Manga
+    case 'Manga':
+      returndata.format = 'Manga'
+      returndata.type = 'Manga'
+      break
+    case 'One-shot':
+      returndata.format = 'Manga'
+      returndata.type = 'One-shot'
+      break
+    case 'Novel':
+      returndata.format = 'Manga'
+      returndata.type = 'Novel'
+      break
+    case 'Doujin':
+      returndata.format = 'Manga'
+      returndata.type = 'Doujin'
+      break
+    case 'Manhwa':
+      returndata.format = 'Manga'
+      returndata.type = 'Manhwa'
+      break
+    case 'Manhua':
+      returndata.format = 'Manga'
+      returndata.type = 'Manhua'
+      break
+  }
+
+  if (data.score && typeof data.score === 'number') returndata.rating = Math.floor(parseFloat(data.score) * 10)
+  if (data.episodes && typeof data.episodes === 'number') returndata.episodes = parseInt(data.episodes)
+  if (data.volumes && typeof data.volumes === 'number') returndata.volumes = parseInt(data.volumes)
+
+  return returndata
+}
+
+function MapMALFull (data) {
+  let returndata = []
+
+  returndata.provider_name = 'MyAnimeList'
+  returndata.provider_url = 'https://myanimelist.com'
+  returndata.provider_avatar = 'https://myanimelist.net/img/common/pwa/launcher-icon-4x.png'
+
+  returndata.title_canonical = data.title
+  if (data.title_japanese && typeof data.title_japanese === 'string') returndata.title_native = data.title_japanese
+  // MAL doesn't provide direct Romaji property it seems.
+  if (data.title_english && typeof data.title_english === 'string') returndata.title_english = data.title_english
+  if (data.title_synonyms && typeof data.title_synonyms === 'string') returndata.title_synonyms = data.title_synonyms.split(', ')
+
+  returndata.id = data.mal_id.toString()
+
+  returndata.url = data.link_canonical
+  if (data.image_url) returndata.cover = data.image_url
+  if (data.synopsis) returndata.synopsis = he.decode(data.synopsis)
+
+  switch (data.type) {
+    // Anime
+    case 'TV':
+      returndata.format = 'Anime'
+      returndata.type = 'TV'
+      break
+    case 'OVA':
+      returndata.format = 'Anime'
+      returndata.type = 'OVA'
+      break
+    case 'ONA':
+      returndata.format = 'Anime'
+      returndata.type = 'ONA'
+      break
+    case 'Movie':
+      returndata.format = 'Anime'
+      returndata.type = 'Movie'
+      break
+    case 'Special':
+      returndata.format = 'Anime'
+      returndata.type = 'Special'
+      break
+    case 'Music':
+      returndata.format = 'Anime'
+      returndata.type = 'Music Video'
+      break
+
+    // Manga
+    case 'Manga':
+      returndata.format = 'Manga'
+      returndata.type = 'Manga'
+      break
+    case 'One-shot':
+      returndata.format = 'Manga'
+      returndata.type = 'One-shot'
+      break
+    case 'Novel':
+      returndata.format = 'Manga'
+      returndata.type = 'Novel'
+      break
+    case 'Doujin':
+      returndata.format = 'Manga'
+      returndata.type = 'Doujin'
+      break
+    case 'Manhwa':
+      returndata.format = 'Manga'
+      returndata.type = 'Manhwa'
+      break
+    case 'Manhua':
+      returndata.format = 'Manga'
+      returndata.type = 'Manhua'
+      break
+  }
+
+  switch (data.status) {
+    // Anime
+    case 'Currently Airing':
+      returndata.status = 'Currently Airing'
+      break
+    case 'Finished Airing':
+      returndata.status = 'Finished Airing'
+      break
+    case 'Not yet aired':
+      returndata.status = 'Upcoming'
+      break
+
+    // Manga
+    case 'Publishing':
+      returndata.status = 'Currently Publishing'
+      break
+    case 'Finished': // Manga
+      returndata.status = 'Finished Publishing'
+      break
+    case 'Not yet published':
+      returndata.status = 'Upcoming'
+      break
+  }
+
+  if (data.episodes && typeof data.episodes === 'number') returndata.episodes = parseInt(data.episodes)
+  if (data.volumes && typeof data.episodes === 'number') returndata.volumes = parseInt(data.volumes)
+  if (data.chapters && typeof data.chapters === 'number') returndata.chapters = parseInt(data.volumes)
+  if (data.score && typeof data.score === 'number') returndata.rating = Math.floor(parseFloat(data.score) * 10)
+  if (data.rating) returndata.ageRating = data.rating
+
+  if (data.aired && data.aired.from && typeof data.aired.from === 'string') { returndata.date_start = new Date(`${data.aired.from}T12:00:00Z`).toISOString() }
+  else if (data.published && data.published.from && typeof data.published.from === 'string') { returndata.date_start = new Date(`${data.published.from}T12:00:00Z`).toISOString() }
+
+  if (data.aired && data.aired.to && typeof data.aired.to === 'string') { returndata.date_end = new Date(`${data.aired.to}T12:00:00Z`).toISOString() }
+  else if (data.published && data.published.to && typeof data.published.to === 'string') { returndata.date_end = new Date(`${data.published.to}T12:00:00Z`).toISOString() }
+
+  // MyAnimeList doesn't provide the next release date but we can atleast calculate.
+  if (data.broadcast && returndata.status.startsWith('Currently')) {
+    let day = data.broadcast.split(' ')[0]
+    let time = data.broadcast.split(' ')[2]
+    let hour = parseInt(time.split(':')[0]) - 8
+    let minute = parseInt(time.split(':')[1]) - 8
+
+    let currentDate = new Date()
+    let date = [
+      'Sundays', 'Mondays', 'Tuesdays', 'Wednesdays', 'Thursdays', 'Fridays', 'Saturdays'
+    ].indexOf(day)
+
+    let daysUntil = (7 + date - currentDate.getDay()) % 7
+
+    let nextRelease = new Date(currentDate.setDate(currentDate.getDate() + daysUntil))
+
+    nextRelease.setUTCHours(hour)
+    nextRelease.setUTCMinutes(minute)
+    nextRelease.setUTCSeconds(0)
+    nextRelease.setUTCMilliseconds(0)
+    returndata.date_nextrelease = nextRelease.toISOString()
+  }
 
   return returndata
 }

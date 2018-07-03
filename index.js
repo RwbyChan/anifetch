@@ -215,7 +215,7 @@ function MapDiscordEmbed (data) {
   if (data.title_native) description.push(`Native: ${data.title_native}`)
   if (data.title_romaji) description.push(`Romaji: ${data.title_romaji}`)
   if (data.title_english) description.push(`English: ${data.title_english}`)
-  if (data.title_synonyms[0]) description.push(`Other names: ${truncateText(data.title_synonyms.join(', '), 50)}`)
+  if (data.title_synonyms && data.title_synonyms[0]) description.push(`Other names: ${truncateText(data.title_synonyms.join(', '), 50)}`)
   if (data.synopsis) description.push('\n' + truncateText(data.synopsis, 256))
   embed.description = description.join('\n')
 

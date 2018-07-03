@@ -377,7 +377,7 @@ function MapMALMini (data) {
   // there wouldn't be anything interesting to see from this.
   // However, if you decide to fetch the full anime information from its ID, a full map is provided just for that.
 
-  returndata.title_canonical = data.title
+  returndata.title_canonical = he.decode(data.title)
 
   returndata.id = data.mal_id.toString()
 
@@ -454,11 +454,11 @@ function MapMALFull (data) {
   returndata.provider_url = 'https://myanimelist.com'
   returndata.provider_avatar = 'https://myanimelist.net/img/common/pwa/launcher-icon-4x.png'
 
-  returndata.title_canonical = data.title
-  if (data.title_japanese && typeof data.title_japanese === 'string') returndata.title_native = data.title_japanese
+  returndata.title_canonical = he.decode(data.title)
+  if (data.title_japanese && typeof data.title_japanese === 'string') returndata.title_native = he.decode(data.title_japanese)
   // MAL doesn't provide direct Romaji property it seems.
-  if (data.title_english && typeof data.title_english === 'string') returndata.title_english = data.title_english
-  if (data.title_synonyms && typeof data.title_synonyms === 'string') returndata.title_synonyms = data.title_synonyms.split(', ')
+  if (data.title_english && typeof data.title_english === 'string') returndata.title_english = he.decode(data.title_english)
+  if (data.title_synonyms && typeof data.title_synonyms === 'string') returndata.title_synonyms = he.decode(data.title_synonyms).split(', ')
 
   returndata.id = data.mal_id.toString()
 

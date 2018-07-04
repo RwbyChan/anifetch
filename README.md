@@ -10,7 +10,39 @@ $ npm i --save anifetch
 
 ## Usage
 
-You should look at the `test.js` file in the repository for a simplification on how it works, though I would pretty much recommend just looking up the main `index.js` file.
+### Search
+
+- `anifetch.search(provider, type, searchterm)` Returns an array of generalized object.
+
+  Example code that searches for `Darling in the FranXX` anime from Kitsu then logs the first result to console.
+
+  ```js
+  const anifetch = require('anifetch')
+
+  anifetch.search('kitsu', 'anime', 'darling in the franxx')
+    .then(results => {
+      console.log(results[0])
+    })
+  ```
+
+  This search function is designed to be as barebone as possible, so I would rather recommend you to write your own and use the maps below to convert them into generalized object.
+
+### Map
+
+As this module is mainly for returning search data in a generalized forms, there would of course be maps for converting them from the original search result data.
+
+- `anifetch.Kitsu` - Mapping for Kitsu's official API
+- `anifetch.AniList` - Mapping for AniList's official GraphQL API
+- `anifetch.MAL` - Mapping for Jikan's search results
+- `anifetch.MALFull` - Mapping for Jikan's full anime page
+
+This module also provides a mapping for a basic Discord embed (`anifetch.DiscordEmbed`)
+
+As for the example code, I don't think there needs to be one, you just need to pass your arrays (with `.map()`) or object to it.
+
+### Miscellaneous notes
+
+While the above pretty much covers what this module does, I'd recommend poking in the `index.js` file just in case. Feel free to make contributions as to how I could make the code better overall. I'll accept them with my open hearts <3
 
 ## But why?
 

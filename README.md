@@ -25,7 +25,7 @@ $ npm i --save anifetch
     })
   ```
 
-  This search function is designed to be as barebone as possible, so I would rather recommend you to write your own and use the maps below to convert them into generalized object.
+The search function is designed to be as barebone as possible, so I would rather recommend you to write your own and use the mapsbelow to convert them into generalized object.
 
 ### Map
 

@@ -1,51 +1,43 @@
 # anifetch
-A node package for searching anime and manga info.   
-Currently supports Kitsu, AniList, MyAnimeList as a provider.
 
-## Installation
-
-```
-$ npm i --save anifetch
-```
+A node package for searching your usual weeb stuff
 
 ## Usage
 
 ### Search
 
-- `anifetch.search(provider, type, searchterm)` Returns an array of generalized object.
+- `anifetch.searchAnime(provider, format, searchterm, limit)`
+  - `provider` The [provider](#anime-and-manga-info) to search with
+  - `format` The series format, could be `anime` or `manga`
+  - `searchterm` The term to search for
+  - `[limit = 1]` Results to show
 
-  Example code that searches for `Darling in the FranXX` anime from Kitsu then logs the first result to console.
+- `anifetch.searchBooru(provider, tags, limit)`
+  - `provider` The [provider](#booru) to search with
+  - `tags` The search tags, could be a string with tags separated by space or an array of strings
+  - `[limit = 1]` Results to show
 
-  ```js
-  const anifetch = require('anifetch')
+- `anifetch.providers`   
+  All of the providers' functions
 
-  anifetch.search('kitsu', 'anime', 'darling in the franxx')
-    .then(results => {
-      console.log(results[0])
-    })
-  ```
+## Supported providers
 
-The search function is designed to be as barebone as possible, so I would rather recommend you to write your own and use the maps below to convert them into generalized object.
+### Anime and manga info
 
-### Map
+- Kitsu
+- AniList
+- MyAnimeList
 
-As this module is mainly for returning search data in a generalized forms, there would of course be maps for converting them from the original search result data.
+### Booru
 
-- `anifetch.Kitsu` - Mapping for Kitsu's official API
-- `anifetch.AniList` - Mapping for AniList's official GraphQL API
-- `anifetch.MAL` - Mapping for Jikan's search results
-- `anifetch.MALFull` - Mapping for Jikan's full anime page
+- Danbooru
+- Gelbooru
+- yande.re
 
-This module also provides a mapping for a basic Discord embed (`anifetch.DiscordEmbed`)
+## Why?
 
-As for the example code, I don't think there needs to be one, you just need to pass your arrays (with `.map()`) or object to it.
+Originally, this package was made to standardize the data returns coming from searching anime and manga. Making each provider return the data in a format you expect makes things easier to handle.
 
-### Miscellaneous notes
+Now it has been rewritten and also support searching boorus!
 
-While the above pretty much covers what this module does, I'd recommend poking in the `index.js` file just in case. Feel free to make contributions as to how I could make the code better overall. I'll accept them with my open hearts <3
-
-## But why?
-
-Each providers gives their own unique data returns, however, you would have to deal with different property naming scheme, different date formats etc.
-
-This module attempts to provide consistent data returns from those providers, having a standardized data structure makes things simple.
+*the booru providers mostly return data in mostly the same format, so having it standardized here doesn't seem to be necessary, for now.*

@@ -135,7 +135,6 @@ async function search (format, term, limit = 1) {
 }
 
 function map (data) {
-  console.log(data)
   let dataReturn = {
     provider_name: 'AniList',
     provider_url: 'https://anilist.co/',

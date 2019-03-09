@@ -27,6 +27,10 @@ const AnifetchQuery = [
   '        english',
   '        native',
   '      }',
+  '      trailer {',
+  '        id',
+  '        site',
+  '      }',
   '      startDate {',
   '        year',
   '        month',
@@ -41,6 +45,7 @@ const AnifetchQuery = [
   '        large',
   '        medium',
   '      }',
+  '      genres',
   '      type',
   '      format',
   '      status',
@@ -130,6 +135,7 @@ async function search (format, term, limit = 1) {
 }
 
 function map (data) {
+  console.log(data)
   let dataReturn = {
     provider_name: 'AniList',
     provider_url: 'https://anilist.co/',
@@ -139,6 +145,9 @@ function map (data) {
 
     url: `https://anilist.co/${data.type.toLowerCase()}/${data.id}`,
     cover: data.coverImage.large || data.coverImage.medium || null,
+    trailerSource: (data.trailer == null ? null : data.trailer.site),
+    trailer: (data.trailer == null ? null : (data.trailer.site == "youtube" ? `https://www.${data.trailer.site}.com/watch?v=${data.trailer.id}` : (data.trailer.site == "dailymotion" ? `https://www.dailymotion.com/video/${data.trailer.id}` : null))),
+    genres: data.genres,
 
     title_canonical: data.title.english || data.title.romaji || data.title.native, // AniList doesn't have canonical titles
     title_native: data.title.native || null,
